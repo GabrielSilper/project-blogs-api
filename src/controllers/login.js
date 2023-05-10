@@ -2,8 +2,8 @@ const { createToken } = require('../auth/authFunctions');
 const { OK } = require('../constants');
 
 const login = (req, res) => {
-    const token = createToken(req.body);
-    res.status(OK).json({ token });
+  const token = createToken({ data: { email: req.body.email } });
+  res.status(OK).json({ token });
 };
 
 module.exports = login;
