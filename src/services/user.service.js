@@ -1,4 +1,4 @@
-const { CREATED, OK, NOT_FOUND } = require('../constants');
+const { CREATED, OK, NOT_FOUND, NO_CONTENT } = require('../constants');
 const { User } = require('../models');
 
 const getAll = async () => {
@@ -31,4 +31,10 @@ const create = async ({ displayName, email, password, image }) => {
   return { type: null, status: CREATED, message: newUser };
 };
 
-module.exports = { create, getAll, getById };
+const autoDestroy = async (email) => {
+  const { id } = await User.findOne({ where: { email } });
+  await User.destroy({ where: { id } });
+  return { type: null, status: NO_CONTENT, message: null };
+};
+
+module.exports = { create, getAll, getById, autoDestroy };

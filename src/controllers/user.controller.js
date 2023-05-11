@@ -19,4 +19,10 @@ const create = async (req, res) => {
   res.status(status).json({ token });
 };
 
-module.exports = { create, getAll, getById };
+const autoDestroy = async (req, res) => {
+  const { email } = req.data;
+  const { status, message } = await userService.autoDestroy(email);
+  res.status(status).json(message);
+};
+
+module.exports = { create, getAll, getById, autoDestroy };
