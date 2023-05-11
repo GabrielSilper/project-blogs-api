@@ -9,9 +9,10 @@ const postRouter = express.Router();
 
 postRouter.use(validateToken);
 postRouter.get('/:id', postController.getById);
+postRouter.put('/:id', validatePutPost, postController.update);
+postRouter.delete('/:id', postController.destroy);
 postRouter.get('/', postController.getAll);
 postRouter.post('/', validatePostPostsCategorys, postController.create);
-postRouter.put('/:id', validatePutPost, postController.update);
 postRouter.use(errorCategory);
 
 module.exports = postRouter;

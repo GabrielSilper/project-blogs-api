@@ -21,9 +21,21 @@ const getById = async (req, res) => {
 const update = async (req, res) => {
   const { id } = req.params;
   const { email } = req.data;
-  const { type, status, message } = await postService.update(id, email, req.body);
+  const { type, status, message } = await postService.update(
+    id,
+    email,
+    req.body,
+  );
   if (type) return res.status(status).json({ message });
   return res.status(status).json(message);
 };
 
-module.exports = { create, getAll, getById, update };
+const destroy = async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.data;
+  const { type, status, message } = await postService.destroy(id, email);
+  if (type) return res.status(status).json({ message });
+  return res.status(status).json(message);
+};
+
+module.exports = { create, getAll, getById, update, destroy };

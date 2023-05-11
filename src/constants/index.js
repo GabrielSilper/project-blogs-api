@@ -5,6 +5,7 @@ const CONFLICT = 409;
 const INTERNAL_SERVER_ERROR = 500;
 const UNAUTHORIZED = 401;
 const NOT_FOUND = 404;
+const NO_CONTENT = 204;
 
 module.exports = {
   OK,
@@ -14,4 +15,5 @@ module.exports = {
   INTERNAL_SERVER_ERROR,
   UNAUTHORIZED,
   NOT_FOUND,
+  NO_CONTENT,
 };

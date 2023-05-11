@@ -1,4 +1,4 @@
-const { CREATED, OK, NOT_FOUND, UNAUTHORIZED } = require('../constants');
+const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = require('../constants');
 const {
   sequelize,
   BlogPost,
@@ -7,7 +7,19 @@ const {
   Category,
 } = require('../models');
 
-// Função auxiliar para cadastrar o post e a lista de categorias em posts_categoires.
+const notFoundPost = {
+  type: 'NOT_FOUND',
+  status: NOT_FOUND,
+  message: 'Post does not exist',
+};
+
+const unauthorizedUser = {
+  type: 'UNAUTHORIZED',
+  status: UNAUTHORIZED,
+  message: 'Unauthorized user',
+};
+
+// Função auxiliar para cadastrar o post e a lista de categorias em posts_categories.
 const createPostCategory = async (postId, categoryIds, t) => {
   await Promise.all(
     categoryIds.map(async (categoryId) =>
@@ -62,13 +74,7 @@ const getById = async (id) => {
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
-  if (!post) {
-    return {
-      type: 'NOT_FOUND',
-      status: NOT_FOUND,
-      message: 'Post does not exist',
-    };
-  }
+  if (!post) return notFoundPost;
   return { type: null, status: OK, message: post };
 };
 
@@ -76,17 +82,8 @@ const update = async (id, email, { title, content }) => {
   const user = await User.findOne({ where: { email } });
   const post = await BlogPost.findByPk(id);
 
-  if (!post) {
-    return {
-      type: 'NOT_FOUND', status: NOT_FOUND, message: 'Post does not exist',
-    };
-  }
-
-  if (post.userId !== user.id) {
-    return {
-      type: 'UNAUTHORIZED', status: UNAUTHORIZED, message: 'Unauthorized user',
-    };
-  }
+  if (!post) return notFoundPost;
+  if (post.userId !== user.id) return unauthorizedUser;
 
   await BlogPost.update(
     { title, content, updated: Date.now() },
@@ -97,4 +94,15 @@ const update = async (id, email, { title, content }) => {
   return { type, status, message };
 };
 
-module.exports = { create, getAll, getById, update };
+const destroy = async (id, email) => {
+  const user = await User.findOne({ where: { email } });
+  const post = await BlogPost.findByPk(id);
+
+  if (!post) return notFoundPost;
+  if (post.userId !== user.id) return unauthorizedUser;
+
+  await BlogPost.destroy({ where: { id } });
+  return { type: null, status: NO_CONTENT, message: null };
+};
+
+module.exports = { create, getAll, getById, update, destroy };
