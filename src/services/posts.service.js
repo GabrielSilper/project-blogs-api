@@ -1,4 +1,11 @@
-const { CREATED, OK, NOT_FOUND, UNAUTHORIZED, NO_CONTENT } = require('../constants');
+const { Op } = require('sequelize');
+const {
+  CREATED,
+  OK,
+  NOT_FOUND,
+  UNAUTHORIZED,
+  NO_CONTENT,
+} = require('../constants');
 const {
   sequelize,
   BlogPost,
@@ -105,4 +112,21 @@ const destroy = async (id, email) => {
   return { type: null, status: NO_CONTENT, message: null };
 };
 
-module.exports = { create, getAll, getById, update, destroy };
+const getByTerm = async (q) => {
+  const posts = await BlogPost.findAll({
+    where: {
+      [Op.or]: [
+        { title: { [Op.substring]: q } },
+        { content: { [Op.substring]: q } },
+      ],
+    },
+    attributes: { exclude: ['user_id'] },
+    include: [
+      { model: User, as: 'user', attributes: { exclude: 'password' } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
+  return { type: null, status: OK, message: posts };
+};
+
+module.exports = { create, getAll, getById, update, destroy, getByTerm };

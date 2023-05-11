@@ -38,4 +38,10 @@ const destroy = async (req, res) => {
   return res.status(status).json(message);
 };
 
-module.exports = { create, getAll, getById, update, destroy };
+const getByTerm = async (req, res) => {
+  const { q } = req.query;
+  const { status, message } = await postService.getByTerm(q);
+  return res.status(status).json(message);
+};
+
+module.exports = { create, getAll, getById, update, destroy, getByTerm };

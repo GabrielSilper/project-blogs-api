@@ -8,6 +8,7 @@ const validatePutPost = require('../middleware/validatePutPost');
 const postRouter = express.Router();
 
 postRouter.use(validateToken);
+postRouter.get('/search', postController.getByTerm);
 postRouter.get('/:id', postController.getById);
 postRouter.put('/:id', validatePutPost, postController.update);
 postRouter.delete('/:id', postController.destroy);
