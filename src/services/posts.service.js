@@ -1,4 +1,4 @@
-const { CREATED, OK, NOT_FOUND } = require('../constants');
+const { CREATED, OK, NOT_FOUND, UNAUTHORIZED } = require('../constants');
 const {
   sequelize,
   BlogPost,
@@ -72,4 +72,29 @@ const getById = async (id) => {
   return { type: null, status: OK, message: post };
 };
 
-module.exports = { create, getAll, getById };
+const update = async (id, email, { title, content }) => {
+  const user = await User.findOne({ where: { email } });
+  const post = await BlogPost.findByPk(id);
+
+  if (!post) {
+    return {
+      type: 'NOT_FOUND', status: NOT_FOUND, message: 'Post does not exist',
+    };
+  }
+
+  if (post.userId !== user.id) {
+    return {
+      type: 'UNAUTHORIZED', status: UNAUTHORIZED, message: 'Unauthorized user',
+    };
+  }
+
+  await BlogPost.update(
+    { title, content, updated: Date.now() },
+    { where: { id } },
+  );
+
+  const { message, status, type } = await getById(id);
+  return { type, status, message };
+};
+
+module.exports = { create, getAll, getById, update };
