@@ -1,5 +1,11 @@
-const { CREATED, OK } = require('../constants');
-const { sequelize, BlogPost, PostCategory, User, Category } = require('../models');
+const { CREATED, OK, NOT_FOUND } = require('../constants');
+const {
+  sequelize,
+  BlogPost,
+  PostCategory,
+  User,
+  Category,
+} = require('../models');
 
 // Função auxiliar para cadastrar o post e a lista de categorias em posts_categoires.
 const createPostCategory = async (postId, categoryIds, t) => {
@@ -48,4 +54,22 @@ const create = async (email, { title, content, categoryIds }) => {
   return { type: null, status: CREATED, message: result };
 };
 
-module.exports = { create, getAll };
+const getById = async (id) => {
+  const post = await BlogPost.findByPk(id, {
+    attributes: { exclude: ['user_id'] },
+    include: [
+      { model: User, as: 'user', attributes: { exclude: 'password' } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
+  if (!post) {
+    return {
+      type: 'NOT_FOUND',
+      status: NOT_FOUND,
+      message: 'Post does not exist',
+    };
+  }
+  return { type: null, status: OK, message: post };
+};
+
+module.exports = { create, getAll, getById };

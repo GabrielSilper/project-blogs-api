@@ -7,6 +7,7 @@ const errorCategory = require('../middleware/errorCategory');
 const postRouter = express.Router();
 
 postRouter.use(validateToken);
+postRouter.get('/:id', postController.getById);
 postRouter.get('/', postController.getAll);
 postRouter.post('/', validatePostPostsCategorys, postController.create);
 postRouter.use(errorCategory);
