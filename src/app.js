@@ -7,7 +7,6 @@ const validateLogin = require('./middleware/validateLogin');
 const userRouter = require('./routers/user.router');
 const categoryRouter = require('./routers/category.router');
 const postRouter = require('./routers/post.router');
-const errorCategory = require('./middleware/errorCategory');
 
 const app = express();
 
@@ -17,12 +16,11 @@ app.get('/', (_request, response) => {
 });
 
 app.use(express.json());
-app.post('/login', validateLogin, login);
 app.use('/user', userRouter);
 app.use('/categories', categoryRouter);
 app.use('/post', postRouter);
+app.post('/login', validateLogin, login);
 app.use(errorEmail);
-app.use(errorCategory);
 app.use(error);
 // É importante exportar a constante `app`,
 // para que possa ser utilizada pelo arquivo `src/server.js`
